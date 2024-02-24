@@ -6,16 +6,16 @@
 <body>
     <h1>Financial Fake news detection</h1>
     <form action="{% url 'result' %}" method="get">
-      <label for="model">Select a model: </label>
-        <select name="model">
+        <label for="line">Enter your text:</label><br>
+        <input type="text" id="line" name="line"><br>
+        <br>
+        <label for="model">Select a model:</label><br>
+        <select name="model" id="model">
             {% for model in models %}
             <option value="{{ model }}">{{ model }}</option>
             {% endfor %}
         </select>
         <br>
-        <br>
-        <label for="line">Enter your text:</label><br>
-        <input type="text" id="line" name="line"><br>
         <br>
         <input type="submit" value="Submit">
     </form>
