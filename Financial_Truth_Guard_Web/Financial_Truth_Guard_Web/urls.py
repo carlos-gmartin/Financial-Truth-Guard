@@ -23,7 +23,6 @@ from Financial_Truth_Guard_Web import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
     # add these to configure our home page (default view) and result web page
     path('', views.home, name='home'),
     path('result/', views.result, name='result'),

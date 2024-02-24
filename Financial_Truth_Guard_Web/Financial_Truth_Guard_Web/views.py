@@ -1,37 +1,47 @@
+import os
+import joblib
 from django.shortcuts import render
+from .utils import preprocess_text
 
-# our home page view
-def home(request):    
-    return render(request, 'index.html')
+# Function to get all model filenames from the models directory
+def get_model_filenames():
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    models_directory = os.path.join(current_directory, "models")
+    model_files = [f for f in os.listdir(models_directory) if f.endswith(".pkl")]
+    return model_files
 
+# Function to load a model from a filename
+def load_model(filename):
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    model_path = os.path.join(current_directory, "models", filename)
+    model = joblib.load(model_path)
+    return model
 
-# custom method for generating predictions
-def getPredictions(pclass, sex, age, sibsp, parch, fare, C, Q, S):
-    import pickle
-    model = pickle.load(open("titanic_survival_ml_model.sav", "rb"))
-    scaled = pickle.load(open("scaler.sav", "rb"))
-    prediction = model.predict(sc.transform([[pclass, sex, age, sibsp, parch, fare, C, Q, S]]))
+# Home page view
+def home(request):
+    # Get all model filenames
+    model_files = get_model_filenames()
     
-    if prediction == 0:
-        return "not survived"
-    elif prediction == 1:
-        return "survived"
-    else:
-        return "error"
-        
+    # Pass the model filenames to the template
+    return render(request, 'index.html', {'models': model_files})
 
-# our result page view
+# Prediction function
+def predict(input_text, model):
+    preprocessed_text = preprocess_text(input_text)
+    prediction = model.predict([preprocessed_text])[0]
+    return "Fake News" if prediction == 1 else "True News"
+
+# Function to handle prediction request
+def getPredictions(line, model_filename):
+    model = load_model(model_filename)
+    result = predict(line, model)
+    return result
+
+# Result page view
 def result(request):
-    pclass = int(request.GET['pclass'])
-    sex = int(request.GET['sex'])
-    age = int(request.GET['age'])
-    sibsp = int(request.GET['sibsp'])
-    parch = int(request.GET['parch'])
-    fare = int(request.GET['fare'])
-    embC = int(request.GET['embC'])
-    embQ = int(request.GET['embQ'])
-    embS = int(request.GET['embS'])
-
-    result = getPredictions(pclass, sex, age, sibsp, parch, fare, embC, embQ, embS)
-
-    return render(request, 'result.html', {'result':result})
+    line = str(request.GET['line'])
+    model_filename = request.GET['model']
+    
+    result = getPredictions(line, model_filename)
+    
+    return render(request, 'result.html', {'result': result})
