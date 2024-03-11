@@ -1,15 +1,24 @@
 import os
 import joblib
+import numpy as np
 from django.shortcuts import render
-from .utils import preprocess_text_for_svm, preprocess_text_for_rf
+from .utils import preprocess_text_for_svm, preprocess_text_for_rf, preprocess_text_for_nb, preprocess_text
 
-# Define the path to the models directory
+# models directory
 MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models")
 
-# Function to get all model filenames from the models directory
-def get_model_filenames():
-    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".pkl")]
-    return model_files
+# Function to load the Naive Bayes model
+def load_naive_bayes():
+    # Load the Naive Bayes model
+    nb_model_path = os.path.join(MODELS_DIR, 'naive_bayes_model.pkl')
+    nb_model = joblib.load(nb_model_path)
+    return nb_model
+
+# Function to load the TF-IDF vectorizer
+def load_tfidf_vectorizer():
+    tfidf_vectorizer_path = os.path.join(MODELS_DIR, 'tfidf_vectorizer.pkl')
+    tfidf_vectorizer = joblib.load(tfidf_vectorizer_path)
+    return tfidf_vectorizer
 
 # Function to load a model from a filename
 def load_model(filename):
@@ -17,48 +26,44 @@ def load_model(filename):
     model = joblib.load(model_path)
     return model
 
-def load_random_forest():
-    # Load the Random Forest model
-    rf_model = load_model('random_forest_model.pkl')
-    return rf_model
-
-def load_svm():
-    # Load the SVM model
-    svm_model = load_model('svm_model.pkl')
-    return svm_model
-
-def load_logistic_regression():
-    # Load the Logistic Regression model
-    lr_model = load_model('best_logistic_regression_model.pkl')
-    return lr_model
-
-def load_naive_bayes():
-    # Load the Naive Bayes model
-    nb_model = load_model('naive_bayes_model.pkl')
-    return nb_model
-
-# Prediction function
+# Function to predict label for input text
 def predict(input_text, model):
     try:
-        prediction = model.predict([input_text])[0]
+        prediction = model.predict(input_text)[0]
         return "Fake News" if prediction == 1 else "True News"
     except Exception as e:
         return f"Error during prediction: {e}"
 
 # Function to handle prediction request
 def get_predictions(line, model_filename):
+    # Load the model
+    model = load_model(model_filename)
+
+    # Preprocess text based on the selected model
     if 'svm' in model_filename.lower():
-        model = load_svm()
+        preprocessed_text = preprocess_text_for_svm(line)
     elif 'random_forest' in model_filename.lower():
-        model = load_random_forest()
+        preprocessed_text = preprocess_text_for_rf(line)
     elif 'logistic_regression' in model_filename.lower():
-        model = load_logistic_regression()
+        preprocessed_text = preprocess_text(line)  # No specific preprocessing for logistic regression
     elif 'naive_bayes' in model_filename.lower():
-        model = load_naive_bayes()
+        preprocessed_text = preprocess_text_for_nb(line)  # Tokenize and preprocess for Naive Bayes
     else:
         return "Model not supported"
     
-    result = predict(line, model)
+    # For Naive Bayes, use TF-IDF vectorizer
+    if 'naive_bayes' in model_filename.lower():
+        # Load the TF-IDF vectorizer
+        tfidf_vectorizer = load_tfidf_vectorizer()
+        # Transform input text using the TF-IDF vectorizer
+        transformed_text = tfidf_vectorizer.transform([preprocessed_text])
+        # Make predictions
+        prediction = model.predict(transformed_text)[0]
+        result = "Fake News" if prediction == 1 else "True News"
+    else:
+        # For other models, directly make predictions
+        result = predict([preprocessed_text], model)
+    
     return result
 
 # Result page view
@@ -72,6 +77,11 @@ def result(request):
     result = get_predictions(line, model_filename)
     
     return render(request, 'result.html', {'result': result})
+
+# Function to get all model filenames from the models directory
+def get_model_filenames():
+    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".pkl")]
+    return model_files
 
 # Home page view
 def home(request):

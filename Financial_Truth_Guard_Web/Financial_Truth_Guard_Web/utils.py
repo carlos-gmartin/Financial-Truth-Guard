@@ -1,6 +1,9 @@
 import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Define a global TfidfVectorizer for SVM models
@@ -40,7 +43,16 @@ def preprocess_text_for_rf(text):
     preprocessed_text = preprocess_text(text)
     return preprocessed_text
 
-# Sample usage:
-# input_text = "This is a news article text that you want to classify."
-# preprocessed_text_svm = preprocess_text_for_svm(input_text)
-# preprocessed_text_rf = preprocess_text_for_rf(input_text)
+# Function to tokenize and preprocess text for Naive Bayes
+def preprocess_text_for_nb(text):
+    # Tokenization using NLTK's word_tokenize
+    tokens = word_tokenize(text)
+    # Convert text to lowercase
+    tokens = [word.lower() for word in tokens]
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    tokens = [word for word in tokens if word not in stop_words]
+    # Lemmatization
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    return ' '.join(tokens)
