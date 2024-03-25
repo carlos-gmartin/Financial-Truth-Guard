@@ -18,12 +18,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-# add this to import our views file
+# import our views file
 from Financial_Truth_Guard_Web import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # add these to configure our home page (default view) and result web page
+
+    
     path('', views.home, name='home'),
     path('result/', views.result, name='result'),
+    path('testing/', views.test_web, name='testing'),
+    path('api/', views.api, name='api')
 ]

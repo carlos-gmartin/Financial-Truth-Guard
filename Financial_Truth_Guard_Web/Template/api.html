@@ -21,19 +21,7 @@
     </nav>
 
     <main>
-        {% for article in articles %}
-        <article>
-            <h2>{{ article.title }}</h2>
-            <h3>{{ article.publisher.name }}</h3>
-            <p>Date: {{ article.published_utc }}</p>
-            <p>Author: {{ article.author }}</p>
-            <p>Description: {{ article.description }}</p>
-            <p>Keywords: {% for keyword in article.keywords %}{{ keyword }}, {% endfor %}</p>
-            <a href="{{ article.article_url }}">Read More</a>
-            <h3>{{ article.result }}</h3>
-            <!-- Include other fields like image_url, amp_url, etc. if needed -->
-        </article>
-        {% endfor %}
+        Under works.
     </main>
 </body>
 </html>

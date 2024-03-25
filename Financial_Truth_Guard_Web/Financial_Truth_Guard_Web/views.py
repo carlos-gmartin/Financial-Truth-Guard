@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 from django.shortcuts import render
 from .utils import preprocess_text_for_svm, preprocess_text_for_rf, preprocess_text_for_nb, preprocess_text
+from .api.news import get_news
 
 # models directory
 MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models")
@@ -66,6 +67,11 @@ def get_predictions(line, model_filename):
     
     return result
 
+# Function to get all model filenames from the models directory
+def get_model_filenames():
+    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".pkl")]
+    return model_files
+
 # Result page view
 def result(request):
     line = request.GET.get('line', '')
@@ -78,15 +84,24 @@ def result(request):
     
     return render(request, 'result.html', {'result': result})
 
-# Function to get all model filenames from the models directory
-def get_model_filenames():
-    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".pkl")]
-    return model_files
-
-# Home page view
+# Home page
 def home(request):
+    data = get_news('NVDA', '25', '03', '2024')
+    articles = data.get('results', [])  # Extract articles from JSON data
+    for article in articles:
+        result = get_predictions(article['description'], 'best_logistic_regression_model.pkl')  # Access 'description' directly from 'article'
+        article['result'] = result
+    return render(request, 'index.html', {'articles' : articles})
+
+# testing page view
+def test_web(request):
     # Get all model filenames
     model_files = get_model_filenames()
     
     # Pass the model filenames to the template
-    return render(request, 'index.html', {'models': model_files})
+    return render(request, 'testing.html', {'models': model_files})
+
+def api(request):
+    return render(request, 'api.html')
+
+

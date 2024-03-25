@@ -1,0 +1,98 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+header {
+    color: black;
+    padding: 20px;
+    text-align: center;
+}
+
+nav ul  {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 50px;
+}
+
+nav ul li a {
+    color: #333;
+    text-decoration: none;
+}
+
+h1 {
+    margin: 0;
+}
+
+form {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"],
+select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: black;
+}
+
+main {
+    margin: 20px;
+  }
+
+article {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+article h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.article .meta {
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.read-more {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 3px;
+}
