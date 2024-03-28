@@ -89,7 +89,7 @@ def home(request):
     data = get_news('NVDA', '25', '03', '2024')
     articles = data.get('results', [])  # Extract articles from JSON data
     for article in articles:
-        result = get_predictions(article['description'], 'best_logistic_regression_model.pkl')  # Access 'description' directly from 'article'
+        result = get_predictions(article['description'], 'naive_bayes_model.pkl')  # Access 'description' directly from 'article'
         article['result'] = result
     return render(request, 'index.html', {'articles' : articles})
 
