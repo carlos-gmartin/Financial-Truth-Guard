@@ -38,8 +38,8 @@ def read_data():
 
 def preprocessing_data(df_true, df_fake):
     # Removing additional columns
-    df_true.drop(columns = 'Unnamed: 0', axis = 1, inplace = True)
-    df_fake.drop(columns = 'Unnamed: 0', axis = 1, inplace = True)
+    df_true.drop(columns='Unnamed: 0', axis=1, inplace=True)
+    df_fake.drop(columns='Unnamed: 0', axis=1, inplace=True)
 
     # Adding labels
     df_true['label'] = 1
@@ -48,16 +48,12 @@ def preprocessing_data(df_true, df_fake):
     # Joining datasets.
     df = pd.concat([df_true, df_fake])
 
-    #df.info()
-
     # Removing all of the missing values
-    df.dropna(how = 'any', inplace = True)
+    df.dropna(how='any', inplace=True)
 
-    #df.info()
     return df
 
 def preprocess_text(df):
-
     nltk.download('stopwords')
     nltk.download('punkt')
 
@@ -73,21 +69,31 @@ def preprocess_text(df):
         for sentence in sentences:
             sentence = sentence.lower()
             tokens = tokenizer.tokenize(sentence)
-            filtered_words = [w.strip() for w in tokens if w not in stop_words and len(w)>1]
+            filtered_words = [w.strip() for w in tokens if w not in stop_words and len(w) > 1]
             temp.extend(filtered_words)
         X.append(temp)
-    del df
-
-    #print(X[0])
 
     return X, Y
 
 def vectorization(X):
     X = [" ".join(sent) for sent in X]  # Convert list of words to list of sentences
-    tfidf = TfidfVectorizer(max_features=2**12)
+    tfidf = TfidfVectorizer(max_features=2 ** 12)
     tfidf_matrix = tfidf.fit_transform(X)
     return tfidf, tfidf_matrix.toarray()  # Return the transformed data
 
+def map_to_traffic_light(predictions, thresholds=(0.4, 0.7)):
+    green_threshold, yellow_threshold = thresholds
+    traffic_lights = []
+
+    for prob in predictions:
+        if prob < green_threshold:
+            traffic_lights.append('Green')
+        elif prob < yellow_threshold:
+            traffic_lights.append('Yellow')
+        else:
+            traffic_lights.append('Red')
+
+    return traffic_lights
 
 def train_model(X, Y):
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
@@ -100,31 +106,23 @@ def train_model(X, Y):
     # Save the model
     joblib.dump(model, 'naive_bayes_model.pkl')
 
-    # Predict on the testing set
-    predictions = model.predict(X_test)
+    # Predict probabilities on the testing set
+    probabilities = model.predict_proba(X_test)
 
-    print(f"Accuracy: {round(accuracy_score(y_test, predictions), 2)*100}%")
+    # Extract probabilities of being fake news (class 0)
+    fake_news_probabilities = probabilities[:, 0]
 
-    cm = confusion_matrix(y_test, predictions)
-    class_names = ['Real', 'Fake']
-    plt.figure(figsize=(8, 5))
-    sns.set(font_scale=1.4)
-    sns.heatmap(cm, annot=True, 
-                annot_kws={"size": 16}, 
-                fmt='g', 
-                cmap='Blues', 
-                xticklabels=class_names, 
-                yticklabels=class_names)
-    plt.xlabel('Predicted labels')
-    plt.ylabel('True labels')
-    plt.title('Confusion Matrix')
-    plt.show()
+    # Map probabilities to traffic light responses
+    traffic_lights = map_to_traffic_light(fake_news_probabilities)
+
+    # Print classification report
+    print(classification_report(y_test, model.predict(X_test)))
 
     return model
 
 if __name__ == "__main__":
     df_true, df_fake = read_data()
-    
+
     df = preprocessing_data(df_true, df_fake)
 
     X, Y = preprocess_text(df)

@@ -1,30 +1,143 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial News Authenticity Checker</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <style>
-        /* Define 2-column layout */
+        /* Your existing styles */
+
+        /* 2-column layout */
         .title {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 20px;
         }
+
         .title img {
             width: 400px;
             height: 200px;
         }
+
         .content {
-            width: calc(100% - 420px); /* Adjust as needed */
-            padding-left: 20px; /* Add space between image and content */
+            width: calc(100% - 420px);
+            padding-left: 20px;
         }
-        /* End of 2-column layout */
+
+        #logo {
+            display: inline-block;
+            position: relative;
+        }
+
+        #logo .speedometer {
+            width: 80px;
+            height: 80px;
+            border-radius: 100%;
+            border: 20px solid #000;
+            border-right: 20px solid white;
+            border-bottom: 20px solid white;
+            transform: rotate(45deg);
+            display: inline-block;
+        }
+
+        #logo .needle {
+            width: 5px;
+            height: 50px;
+            background: #999999;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border-top-left-radius: 100%;
+            border-top-right-radius: 100%;
+            display: inline-block;
+            left: calc(50% - 2.5px);
+            /* Adjusted position */
+            position: absolute;
+            top: 15px;
+            transform-origin: bottom;
+            /* Default position */
+            animation-duration: 3s;
+            /* Adjust animation duration */
+            animation-timing-function: linear;
+            /* Adjust timing function */
+        }
+
+        #logo .needle:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 5px 10px 5px;
+            border-color: transparent transparent #999999 transparent;
+            transform: translateX(-50%);
+        }
+
+        /* Green animation */
+        @keyframes rotateNeedleGreen {
+            from {
+                transform: rotate(-90deg);
+                /* Start position */
+            }
+
+            to {
+                transform: rotate(-90deg);
+                /* End position */
+            }
+        }
+
+        /* Yellow animation */
+        @keyframes rotateNeedleYellow {
+            from {
+                transform: rotate(-90deg);
+                /* Start position */
+            }
+
+            to {
+                transform: rotate(0deg);
+                /* End position */
+            }
+        }
+
+        /* Red animation */
+        @keyframes rotateNeedleRed {
+            from {
+                transform: rotate(-90deg);
+                /* Start position */
+            }
+
+            to {
+                transform: rotate(90deg);
+                /* End position */
+            }
+        }
+
+        /* Apply animations based on traffic light */
+        #logo .needle.Green {
+            animation-name: rotateNeedleGreen;
+            /* Animation for green */
+            transform: rotate(-90deg);
+        }
+
+        #logo .needle.Yellow {
+            animation-name: rotateNeedleYellow;
+            /* Animation for yellow */
+            transform: rotate(0deg);
+        }
+
+        #logo .needle.Red {
+            animation-name: rotateNeedleRed;
+            /* Animation for red */
+            transform: rotate(90deg);
+        }
     </style>
 </head>
+
 <body>
     <header>
         <h1>Financial News Authenticity Checker</h1>
@@ -37,7 +150,6 @@
             <li><a href="{% url 'testing' %}">Test</a></li>
         </ul>
     </nav>
-
     <main>
         {% for article in articles %}
         <article>
@@ -50,11 +162,16 @@
                     <p>Description: {{ article.description }}</p>
                     <p>Keywords: {% for keyword in article.keywords %}{{ keyword }}, {% endfor %}</p>
                     <a href="{{ article.article_url }}">Read More</a>
-                    <h3>{{ article.result }}</h3>
+                    <h3>{{ article.traffic_light }}</h3>
+                    <div id="logo">
+                        <span class="speedometer"></span>
+                        <span class="needle {{ article.traffic_light }}"></span>
+                    </div>
                 </div>
             </div>
         </article>
         {% endfor %}
     </main>
 </body>
+
 </html>
