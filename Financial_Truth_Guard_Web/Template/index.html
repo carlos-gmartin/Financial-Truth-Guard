@@ -6,6 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial News Authenticity Checker</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* Define 2-column layout */
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .title img {
+            width: 400px;
+            height: 200px;
+        }
+        .content {
+            width: calc(100% - 420px); /* Adjust as needed */
+            padding-left: 20px; /* Add space between image and content */
+        }
+        /* End of 2-column layout */
+    </style>
 </head>
 <body>
     <header>
@@ -23,15 +41,18 @@
     <main>
         {% for article in articles %}
         <article>
-            <h2>{{ article.title }}</h2>
-            <h3>{{ article.publisher.name }}</h3>
-            <p>Date: {{ article.published_utc }}</p>
-            <p>Author: {{ article.author }}</p>
-            <p>Description: {{ article.description }}</p>
-            <p>Keywords: {% for keyword in article.keywords %}{{ keyword }}, {% endfor %}</p>
-            <a href="{{ article.article_url }}">Read More</a>
-            <h3>{{ article.result }}</h3>
-            <!-- Include other fields like image_url, amp_url, etc. if needed -->
+            <div class="title">
+                <img src="{{ article.image_url }}" alt="Article Image">
+                <div class="content">
+                    <h2>{{ article.title }}</h2>
+                    <p>Date: {{ article.published_utc }}</p>
+                    <p>Author: {{ article.author }}</p>
+                    <p>Description: {{ article.description }}</p>
+                    <p>Keywords: {% for keyword in article.keywords %}{{ keyword }}, {% endfor %}</p>
+                    <a href="{{ article.article_url }}">Read More</a>
+                    <h3>{{ article.result }}</h3>
+                </div>
+            </div>
         </article>
         {% endfor %}
     </main>

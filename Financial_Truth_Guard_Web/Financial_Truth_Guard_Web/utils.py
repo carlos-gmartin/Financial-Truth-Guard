@@ -1,4 +1,5 @@
 import re
+import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -45,14 +46,14 @@ def preprocess_text_for_rf(text):
 
 # Function to tokenize and preprocess text for Naive Bayes
 def preprocess_text_for_nb(text):
-    # Tokenization using NLTK's word_tokenize
-    tokens = word_tokenize(text)
-    # Convert text to lowercase
-    tokens = [word.lower() for word in tokens]
-    # Remove stopwords
-    stop_words = set(stopwords.words('english'))
-    tokens = [word for word in tokens if word not in stop_words]
-    # Lemmatization
-    lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(word) for word in tokens]
-    return ' '.join(tokens)
+    #nltk.download('stopwords')
+    #nltk.download('punkt')
+
+    stop_words = set(nltk.corpus.stopwords.words('english'))
+    tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
+
+    tokens = tokenizer.tokenize(text.lower())
+    filtered_words = [w.strip() for w in tokens if w not in stop_words and len(w) > 1]
+    preprocessed_text = ' '.join(filtered_words)
+
+    return preprocessed_text

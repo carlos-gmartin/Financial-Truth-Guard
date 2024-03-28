@@ -5,7 +5,6 @@ import warnings
 warnings.filterwarnings('ignore')
 import matplotlib.pyplot as plt
 import seaborn as sns
-import re
 
 import nltk
 from nltk.tokenize import word_tokenize

@@ -6,7 +6,7 @@ from .utils import preprocess_text_for_svm, preprocess_text_for_rf, preprocess_t
 from .api.news import get_news
 
 # models directory
-MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models")
+MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v2")
 
 # Function to load the Naive Bayes model
 def load_naive_bayes():
@@ -40,20 +40,21 @@ def get_predictions(line, model_filename):
     # Load the model
     model = load_model(model_filename)
 
-    # Preprocess text based on the selected model
-    if 'svm' in model_filename.lower():
-        preprocessed_text = preprocess_text_for_svm(line)
-    elif 'random_forest' in model_filename.lower():
-        preprocessed_text = preprocess_text_for_rf(line)
-    elif 'logistic_regression' in model_filename.lower():
-        preprocessed_text = preprocess_text(line)  # No specific preprocessing for logistic regression
-    elif 'naive_bayes' in model_filename.lower():
-        preprocessed_text = preprocess_text_for_nb(line)  # Tokenize and preprocess for Naive Bayes
-    else:
-        return "Model not supported"
+    # # Preprocess text based on the selected model
+    # if 'svm' in model_filename.lower():
+    #     preprocessed_text = preprocess_text_for_svm(line)
+    # elif 'random_forest' in model_filename.lower():
+    #     preprocessed_text = preprocess_text_for_rf(line)
+    # elif 'logistic_regression' in model_filename.lower():
+    #     preprocessed_text = preprocess_text(line)  # No specific preprocessing for logistic regression
+    # else:
+    #     return "Model not supported"
     
     # For Naive Bayes, use TF-IDF vectorizer
     if 'naive_bayes' in model_filename.lower():
+        # Preprocess text for Naive Bayes
+        preprocessed_text = preprocess_text_for_nb(line)
+
         # Load the TF-IDF vectorizer
         tfidf_vectorizer = load_tfidf_vectorizer()
         # Transform input text using the TF-IDF vectorizer
@@ -64,7 +65,7 @@ def get_predictions(line, model_filename):
     else:
         # For other models, directly make predictions
         result = predict([preprocessed_text], model)
-    
+
     return result
 
 # Function to get all model filenames from the models directory
