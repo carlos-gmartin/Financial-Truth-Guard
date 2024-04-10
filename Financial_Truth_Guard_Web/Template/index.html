@@ -164,9 +164,10 @@
                     <a href="{{ article.article_url }}">Read More</a>
                     <h3>{{ article.traffic_light }}</h3>
                     <div id="logo">
-                        <span class="speedometer"></span>
+                        <span class="speedometer" style="border: 20px solid {{ article.traffic_light }}; border-right: 20px solid white; border-bottom: 20px solid white;"></span>
                         <span class="needle {{ article.traffic_light }}"></span>
                     </div>
+                    <h3>Sussy words: {{ article.result }}</h3>
                 </div>
             </div>
         </article>

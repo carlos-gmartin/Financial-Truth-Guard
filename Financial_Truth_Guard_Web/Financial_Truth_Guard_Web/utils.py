@@ -1,5 +1,6 @@
 import re
 import nltk
+import numpy as np
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -57,3 +58,20 @@ def preprocess_text_for_nb(text):
     preprocessed_text = ' '.join(filtered_words)
 
     return preprocessed_text
+
+def map_to_traffic_light(predictions, thresholds=(0.3, 0.7)):
+    green_threshold, yellow_threshold = thresholds
+    max_prob_index = np.argmax(predictions)
+    max_prob = predictions[max_prob_index]
+
+    if max_prob < green_threshold:
+        return 'Green'
+    elif max_prob < yellow_threshold:
+        return 'Yellow'
+    else:
+        return 'Red'
+
+# Function to get all model filenames from the models directory
+def get_model_filenames():
+    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".pkl")]
+    return model_files
