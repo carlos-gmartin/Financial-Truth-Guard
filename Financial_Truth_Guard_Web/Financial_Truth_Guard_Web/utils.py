@@ -59,10 +59,28 @@ def preprocess_text_for_nb(text):
 
     return preprocessed_text
 
+def preprocess_text_for_cnn(text):
+    # Tokenize the text
+    tokens = word_tokenize(text)
+    
+    # Convert tokens to lowercase
+    tokens = [token.lower() for token in tokens]
+    
+    # Lemmatization
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    
+    # Join tokens back into a single string
+    preprocessed_text = ' '.join(tokens)
+    
+    return preprocessed_text
+
 def map_to_traffic_light(predictions, thresholds=(0.3, 0.7)):
     green_threshold, yellow_threshold = thresholds
     max_prob_index = np.argmax(predictions)
-    max_prob = predictions[max_prob_index]
+    max_prob = float(predictions[max_prob_index])  # Convert max_prob to float
+    
+    print("Max Probability:", max_prob)  # Add this line for debugging
 
     if max_prob < green_threshold:
         return 'Green'
@@ -70,6 +88,7 @@ def map_to_traffic_light(predictions, thresholds=(0.3, 0.7)):
         return 'Yellow'
     else:
         return 'Red'
+
 
 # Function to get all model filenames from the models directory
 def get_model_filenames():
