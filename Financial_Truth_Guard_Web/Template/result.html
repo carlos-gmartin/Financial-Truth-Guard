@@ -1,13 +1,155 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Result</title>
-  </head>
-  <body>
-    <h1>Prediction</h1>
+<html lang="en">
 
-    {{ result }}
-    
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial News Authenticity Checker</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* Your existing styles */
+
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .title img {
+            width: 400px;
+            height: 200px;
+        }
+
+        .content {
+            width: calc(100% - 420px);
+            padding-left: 20px;
+        }
+
+        #logo {
+            display: inline-block;
+            position: relative;
+        }
+
+        #logo .speedometer {
+            width: 80px;
+            height: 80px;
+            border-radius: 100%;
+            border: 20px solid #000;
+            border-right: 20px solid white;
+            border-bottom: 20px solid white;
+            transform: rotate(45deg);
+            display: inline-block;
+        }
+
+        #logo .needle {
+            width: 5px;
+            height: 50px;
+            background: #999999;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border-top-left-radius: 100%;
+            border-top-right-radius: 100%;
+            display: inline-block;
+            left: calc(50% - 2.5px);
+            position: absolute;
+            top: 15px;
+            transform-origin: bottom;
+            animation-duration: 3s;
+            animation-timing-function: linear;
+        }
+
+        #logo .needle:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 5px 10px 5px;
+            border-color: transparent transparent #999999 transparent;
+            transform: translateX(-50%);
+        }
+
+        @keyframes rotateNeedleGreen {
+            from {
+                transform: rotate(-90deg);
+            }
+
+            to {
+                transform: rotate(-90deg);
+            }
+        }
+
+        @keyframes rotateNeedleYellow {
+            from {
+                transform: rotate(-90deg);
+            }
+
+            to {
+                transform: rotate(0deg);
+            }
+        }
+
+        @keyframes rotateNeedleRed {
+            from {
+                transform: rotate(-90deg);
+            }
+
+            to {
+                transform: rotate(90deg);
+            }
+        }
+
+        #logo .needle.Green {
+            animation-name: rotateNeedleGreen;
+            transform: rotate(-90deg);
+        }
+
+        #logo .needle.Yellow {
+            animation-name: rotateNeedleYellow;
+            transform: rotate(0deg);
+        }
+
+        #logo .needle.Red {
+            animation-name: rotateNeedleRed;
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Financial News Authenticity Checker</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'api' %}">Api</a></li>
+            <li><a href="{% url 'testing' %}">Test</a></li>
+        </ul>
+    </nav>
+    <main>
+        <article>
+            <div class="title">
+                <div class="content">
+                    <h2>Prediction Result</h2>
+                    <p><strong>Input Text:</strong> {{ line }}</p>
+                    <p><strong>Model Used:</strong> {{ model }}</p>
+                    <p><strong>Predictions:</strong> {{ predictions }}</p>
+                    <h3>Traffic Light: <span style="color: {{ traffic_light }}">{{ traffic_light }}</span></h3>
+                    <div id="logo">
+                        <span class="speedometer" style="border: 20px solid {{ traffic_light }}; border-right: 20px solid white; border-bottom: 20px solid white;"></span>
+                        <span class="needle {{ traffic_light }}"></span>
+                    </div>
+                    <h3>Fake News Keywords: {{ indicative_words|join:", " }}</h3>
+                </div>
+            </div>
+        </article>
+    </main>
+</body>
+
 </html>

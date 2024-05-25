@@ -7,6 +7,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+import os
 
 # Define a global TfidfVectorizer for SVM models
 tfidf_vectorizer = TfidfVectorizer()
@@ -91,6 +92,6 @@ def map_to_traffic_light(predictions, thresholds=(0.3, 0.7)):
 
 
 # Function to get all model filenames from the models directory
-def get_model_filenames():
-    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".pkl")]
+def get_model_filenames(MODELS_DIR):
+    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith(".h5")]
     return model_files

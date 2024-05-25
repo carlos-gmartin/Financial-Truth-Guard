@@ -4,140 +4,187 @@ import numpy as np
 from django.shortcuts import render
 from .utils import preprocess_text_for_nb, map_to_traffic_light, get_model_filenames, preprocess_text_for_cnn
 from .api.news import get_news
-from collections import Counter
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+import logging
 
-# models directory
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Models directory
 MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v2")
 MODELS_DIR_v3 = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v3")
 
-# Function to load the Naive Bayes model
 def load_naive_bayes():
-    # Load the Naive Bayes model
+    """Load and return the Naive Bayes model."""
     nb_model_path = os.path.join(MODELS_DIR, 'naive_bayes_model.pkl')
-    nb_model = joblib.load(nb_model_path)
-    return nb_model
+    try:
+        nb_model = joblib.load(nb_model_path)
+        logger.info("Naive Bayes model loaded successfully.")
+        return nb_model
+    except Exception as e:
+        logger.error(f"Error loading Naive Bayes model: {e}")
+        raise
 
-# Function to load the TF-IDF vectorizer
 def load_tfidf_vectorizer():
+    """Load and return the TF-IDF vectorizer."""
     tfidf_vectorizer_path = os.path.join(MODELS_DIR, 'tfidf_vectorizer.pkl')
-    tfidf_vectorizer = joblib.load(tfidf_vectorizer_path)
-    return tfidf_vectorizer
+    try:
+        tfidf_vectorizer = joblib.load(tfidf_vectorizer_path)
+        logger.info("TF-IDF vectorizer loaded successfully.")
+        return tfidf_vectorizer
+    except Exception as e:
+        logger.error(f"Error loading TF-IDF vectorizer: {e}")
+        raise
 
-# Function to load the CNN model
 def load_cnn_model():
-    # Load the CNN model
+    """Load and return the CNN model."""
     cnn_model_path = os.path.join(MODELS_DIR_v3, 'cnn_model.h5')
-    cnn_model = load_model(cnn_model_path)
-    return cnn_model
+    try:
+        cnn_model = load_model(cnn_model_path)
+        logger.info("CNN model loaded successfully.")
+        return cnn_model
+    except Exception as e:
+        logger.error(f"Error loading CNN model: {e}")
+        raise
 
-# Function to load the CNN model TF-IDF tokenizer
 def load_cnn_tokenizer():
+    """Load and return the CNN tokenizer."""
     tokenizer_path = os.path.join(MODELS_DIR_v3, 'tokenizer.pkl')
-    tokenizer = joblib.load(tokenizer_path)
-    return tokenizer
+    try:
+        tokenizer = joblib.load(tokenizer_path)
+        logger.info("CNN tokenizer loaded successfully.")
+        return tokenizer
+    except Exception as e:
+        logger.error(f"Error loading CNN tokenizer: {e}")
+        raise
 
 def get_predictions(text, model_filename):
-    # Naive Bayes
-    if 'naive_bayes' in model_filename.lower():
-        # Load Naive Bayes model and TF-IDF vectorizer
-        nb_model = load_naive_bayes()
-        tfidf_vectorizer = load_tfidf_vectorizer()
-        
-        # Preprocess text for Naive Bayes
-        preprocessed_text = preprocess_text_for_nb(text)
-        
-        # Transform input text using the TF-IDF vectorizer
-        transformed_text = tfidf_vectorizer.transform([preprocessed_text])
+    """Get predictions for the given text using the specified model."""
+    try:
+        if 'naive_bayes' in model_filename.lower():
+            # Load Naive Bayes model and TF-IDF vectorizer
+            nb_model = load_naive_bayes()
+            tfidf_vectorizer = load_tfidf_vectorizer()
 
-        try:
+            # Preprocess text for Naive Bayes
+            preprocessed_text = preprocess_text_for_nb(text)
+
+            # Transform input text using the TF-IDF vectorizer
+            transformed_text = tfidf_vectorizer.transform([preprocessed_text])
+
             # Make predictions using Naive Bayes
             predictions = nb_model.predict_proba(transformed_text)[0]
-            print("Naive Bayes Predictions:", predictions)  # Add this line for debugging
+            logger.info("Naive Bayes predictions: %s", predictions)
             return predictions
-        except Exception as e:
-            return f"Error during prediction: {e}"
-    
-    # CNN model
-    else:
-        # Load CNN model and tokenizer
-        cnn_model = load_cnn_model()
-        tokenizer = load_cnn_tokenizer()
-        
-        # Preprocess text for CNN
-        preprocessed_text = preprocess_text_for_cnn(text)
-        
-        # Tokenize and pad input text
-        X_test_sequences = tokenizer.texts_to_sequences([preprocessed_text])
-        X_test_pad = pad_sequences(X_test_sequences, padding='post', maxlen=24512)
-        
-        try:
+
+        else:
+            # Load CNN model and tokenizer
+            cnn_model = load_cnn_model()
+            tokenizer = load_cnn_tokenizer()
+
+            # Preprocess text for CNN
+            preprocessed_text = preprocess_text_for_cnn(text)
+
+            # Tokenize and pad input text
+            X_test_sequences = tokenizer.texts_to_sequences([preprocessed_text])
+            X_test_pad = pad_sequences(X_test_sequences, padding='post', maxlen=24512)
+
             # Make predictions using CNN
             predictions = cnn_model.predict(X_test_pad)[0]
-            print("CNN Predictions:", predictions)  # Add this line for debugging
+            logger.info("CNN predictions: %s", predictions)
             return predictions
-        except Exception as e:
-            return f"Error during prediction: {e}"
+
+    except Exception as e:
+        logger.error(f"Error during prediction: {e}")
+        return f"Error during prediction: {e}"
 
 def extract_fake_news_words(text, predictions, threshold=0.5):
-    # Tokenize the text
-    tokens = word_tokenize(text)
-    
-    # Convert tokens to lowercase
-    tokens = [token.lower() for token in tokens]
-    
-    # Lemmatization
-    lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(token) for token in tokens]
-    
-    # Zip tokens with corresponding predictions
-    token_predictions = zip(tokens, predictions)
-    
-    # Filter tokens based on predictions
-    fake_news_words = [token for token, pred in token_predictions if pred >= threshold]
-    
-    return fake_news_words
+    """Extract words from text that are indicative of fake news based on prediction thresholds."""
+    try:
+        # Tokenize and preprocess text
+        tokens = word_tokenize(text)
+        tokens = [token.lower() for token in tokens]
+        lemmatizer = WordNetLemmatizer()
+        tokens = [lemmatizer.lemmatize(token) for token in tokens]
+
+        # Zip tokens with corresponding predictions and filter based on threshold
+        token_predictions = zip(tokens, predictions)
+        fake_news_words = [token for token, pred in token_predictions if pred >= threshold]
+
+        logger.info("Extracted fake news words: %s", fake_news_words)
+        return fake_news_words
+
+    except Exception as e:
+        logger.error(f"Error extracting fake news words: {e}")
+        return []
 
 # Result page view
 def result(request):
     line = request.GET.get('line', '')
     model_filename = request.GET.get('model', '')
-    
+
     if not line or not model_filename:
+        logger.warning("Missing line or model filename")
         return render(request, 'error.html', {'error_message': 'Missing line or model filename'})
 
-    result = get_predictions(line, model_filename)
-    
-    return render(request, 'result.html', {'result': result})
+    # Get predictions
+    predictions = get_predictions(line, model_filename)
+
+    # Calculate traffic light based on the predictions
+    traffic_light = map_to_traffic_light(predictions)
+
+    # Get indicative words for fake news
+    indicative_words = extract_fake_news_words(line, predictions)
+
+    return render(request, 'result.html', {
+        'line': line,
+        'model': model_filename,
+        'predictions': predictions,
+        'traffic_light': traffic_light,
+        'indicative_words': indicative_words
+    })
+
 
 # Home page
 def home(request):
-    data = get_news('NVDA', '25', '03', '2024')
-    articles = data.get('results', [])
+    try:
+        data = get_news('NVDA', '25', '03', '2024')
+        articles = data.get('results', [])
 
-    for article in articles:
-        # Get predictions for the article
-        predictions = get_predictions(article['description'], 'cnn_model.h5')
-        
-        # Calculate traffic light based on the predictions
-        article['traffic_light'] = map_to_traffic_light(predictions)
-        
-        # Get indicative words for fake news
-        indicative_words = extract_fake_news_words(article['description'], predictions)
-        article['indicative_words'] = indicative_words
-        
-    return render(request, 'index.html', {'articles': articles})
+        for article in articles:
+            # Get predictions for the article
+            predictions = get_predictions(article['description'], 'cnn_model.h5')
 
-# testing page view
-def test_web(request):
-    # Get all model filenames
-    model_files = get_model_filenames()
-    
-    # Pass the model filenames to the template
-    return render(request, 'testing.html', {'models': model_files})
+            # Calculate traffic light based on the predictions
+            article['traffic_light'] = map_to_traffic_light(predictions)
 
+            # Get indicative words for fake news
+            indicative_words = extract_fake_news_words(article['description'], predictions)
+            article['indicative_words'] = indicative_words
+
+        return render(request, 'index.html', {'articles': articles})
+
+    except Exception as e:
+        logger.error(f"Error in home view: {e}")
+        return render(request, 'error.html', {'error_message': 'An error occurred while fetching the news'})
+
+# Testing page view
+def testing(request):
+    try:
+        # Get all model filenames
+        model_files = get_model_filenames(MODELS_DIR_v3)
+
+        # Pass the model filenames to the template
+        return render(request, 'testing.html', {'models': model_files})
+
+    except Exception as e:
+        logger.error(f"Error in testing view: {e}")
+        return render(request, 'error.html', {'error_message': 'An error occurred while loading the testing page'})
+
+# API documentation page view
 def api(request):
     return render(request, 'api.html')

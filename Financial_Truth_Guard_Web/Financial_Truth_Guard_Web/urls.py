@@ -22,11 +22,8 @@ from django.urls import path
 from Financial_Truth_Guard_Web import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    
     path('', views.home, name='home'),
+    path('api/', views.api, name='api'),
+    path('testing/', views.testing, name='testing'),
     path('result/', views.result, name='result'),
-    path('testing/', views.test_web, name='testing'),
-    path('api/', views.api, name='api')
 ]
