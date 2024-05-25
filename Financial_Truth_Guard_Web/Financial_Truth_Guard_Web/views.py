@@ -5,9 +5,9 @@ from django.shortcuts import render
 from .utils import preprocess_text_for_nb, map_to_traffic_light, get_model_filenames, preprocess_text_for_cnn
 from .api.news import get_news
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import logging
 
 # Configure logging
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Models directory
 MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v2")
-MODELS_DIR_v3 = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v3")
+MODELS_DIR_v3 = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v3/models")
 
 def load_naive_bayes():
     """Load and return the Naive Bayes model."""
@@ -87,14 +87,10 @@ def get_predictions(text, model_filename):
             tokenizer = load_cnn_tokenizer()
 
             # Preprocess text for CNN
-            preprocessed_text = preprocess_text_for_cnn(text)
-
-            # Tokenize and pad input text
-            X_test_sequences = tokenizer.texts_to_sequences([preprocessed_text])
-            X_test_pad = pad_sequences(X_test_sequences, padding='post', maxlen=24512)
+            preprocessed_text = preprocess_text_for_cnn(text, tokenizer)  # Pass tokenizer to preprocess_text_for_cnn
 
             # Make predictions using CNN
-            predictions = cnn_model.predict(X_test_pad)[0]
+            predictions = cnn_model.predict(preprocessed_text)  # No need for padding as it's handled in preprocess_text_for_cnn
             logger.info("CNN predictions: %s", predictions)
             return predictions
 
@@ -102,7 +98,8 @@ def get_predictions(text, model_filename):
         logger.error(f"Error during prediction: {e}")
         return f"Error during prediction: {e}"
 
-def extract_fake_news_words(text, predictions, threshold=0.5):
+
+def extract_fake_news_words(text, predictions, threshold=0.1):
     """Extract words from text that are indicative of fake news based on prediction thresholds."""
     try:
         # Tokenize and preprocess text

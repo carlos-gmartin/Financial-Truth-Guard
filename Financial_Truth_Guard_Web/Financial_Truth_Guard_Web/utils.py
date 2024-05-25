@@ -7,6 +7,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
 
 # Define a global TfidfVectorizer for SVM models
@@ -60,35 +61,23 @@ def preprocess_text_for_nb(text):
 
     return preprocessed_text
 
-def preprocess_text_for_cnn(text):
-    # Tokenize the text
-    tokens = word_tokenize(text)
-    
-    # Convert tokens to lowercase
-    tokens = [token.lower() for token in tokens]
-    
-    # Lemmatization
-    lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(token) for token in tokens]
-    
-    # Join tokens back into a single string
-    preprocessed_text = ' '.join(tokens)
-    
-    return preprocessed_text
+def preprocess_text_for_cnn(text, tokenizer):
+    # Tokenize and pad input text using the tokenizer
+    sequences = tokenizer.texts_to_sequences([text])
+    X_pad = pad_sequences(sequences, padding='post', maxlen=24512)  # Adjust maxlen as needed
+    return X_pad
 
-def map_to_traffic_light(predictions, thresholds=(0.3, 0.7)):
+
+def map_to_traffic_light(predictions, thresholds=(0.25, 0.5)):
     green_threshold, yellow_threshold = thresholds
-    max_prob_index = np.argmax(predictions)
-    max_prob = float(predictions[max_prob_index])  # Convert max_prob to float
-    
-    print("Max Probability:", max_prob)  # Add this line for debugging
+    max_prob = np.max(predictions)  # Get the maximum probability from the predictions
 
-    if max_prob < green_threshold:
-        return 'Green'
-    elif max_prob < yellow_threshold:
+    if max_prob >= 0.7:
+        return 'Red'  # Automatically classify as Red if probability is 0.7 or higher
+    elif max_prob >= 0.3:
         return 'Yellow'
     else:
-        return 'Red'
+        return 'Green'
 
 
 # Function to get all model filenames from the models directory
