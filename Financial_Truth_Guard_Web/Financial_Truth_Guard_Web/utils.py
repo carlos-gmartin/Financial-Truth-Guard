@@ -72,9 +72,9 @@ def map_to_traffic_light(predictions, thresholds=(0.25, 0.5)):
     green_threshold, yellow_threshold = thresholds
     max_prob = np.max(predictions)  # Get the maximum probability from the predictions
 
-    if max_prob >= 0.7:
-        return 'Red'  # Automatically classify as Red if probability is 0.7 or higher
-    elif max_prob >= 0.3:
+    if max_prob >= yellow_threshold:
+        return 'Red'  # Automatically classify as Red if probability is 0.5 or higher
+    elif max_prob >= green_threshold:
         return 'Yellow'
     else:
         return 'Green'
