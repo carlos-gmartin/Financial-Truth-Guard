@@ -1,3 +1,7 @@
 # Big dataset. 75,000
+Model_v2/data/
+Model_v3/data/
+Model_v3/models/cnn_model.h5
+Model_v3/models/model_checkpoint.h5
 
-Model_v2/data
+/Financial_Truth_Guard_Web/Financial_Truth_Guard_Web/models/
