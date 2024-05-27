@@ -10,9 +10,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
 
-# Define a global TfidfVectorizer for SVM models
-tfidf_vectorizer = TfidfVectorizer()
-
 def preprocess_text(text):
     text = text.lower()
     
@@ -34,13 +31,6 @@ def preprocess_text(text):
     preprocessed_text = ' '.join(tokens)
     
     return preprocessed_text
-
-# Function to preprocess text for SVM models
-def preprocess_text_for_svm(text):
-    global tfidf_vectorizer  # Use the global tfidf_vectorizer
-    preprocessed_text = preprocess_text(text)
-    text_tfidf = tfidf_vectorizer.transform([preprocessed_text])
-    return text_tfidf
 
 # Function to preprocess text for Random Forest and Naive Bayes models
 def preprocess_text_for_rf(text):
@@ -73,7 +63,7 @@ def map_to_traffic_light(predictions, thresholds=(0.25, 0.5)):
     max_prob = np.max(predictions)  # Get the maximum probability from the predictions
 
     if max_prob >= yellow_threshold:
-        return 'Red'  # Automatically classify as Red if probability is 0.5 or higher
+        return 'Red'  # Automatically classify as red if probability is 0.5 or higher
     elif max_prob >= green_threshold:
         return 'Yellow'
     else:

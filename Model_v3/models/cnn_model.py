@@ -134,7 +134,7 @@ def evaluate_model(model_file, tokenizer_file, X_test, y_test, save_confusion_ma
     # Define class labels
     class_labels = ['Fake', 'True']  # Class labels: 'Fake' for 0 and 'True' for 1
     
-    # Plot confusion matrix as an image if requested
+    # Plot confusion matrix
     if save_confusion_matrix_image:
         plt.figure(figsize=(8, 6))
         sns.set(font_scale=1.2)
