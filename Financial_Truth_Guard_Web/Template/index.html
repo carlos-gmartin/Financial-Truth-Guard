@@ -159,6 +159,12 @@
             <button type="submit">Change Model</button>
         </form>
 
+        <form action="{% url 'home' %}" method="get">
+            <label for="stock_ticker">Enter Stock Ticker Symbol:</label>
+            <input type="text" id="stock_ticker" name="stock_ticker" required>
+            <button type="submit">Search</button>
+        </form>
+
         {% for article in articles %}
         <article>
             <div class="title">

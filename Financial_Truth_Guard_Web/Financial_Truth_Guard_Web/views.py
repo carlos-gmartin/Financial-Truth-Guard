@@ -186,15 +186,16 @@ def landing(request):
 
 # Home page
 def home(request):
-
     model_filename = request.GET.get('model')
+    stock_ticker = request.GET.get('stock_ticker')
 
-    if not model_filename:
-        # If no model is selected, render the landing page, fix for user movement between test and home page.
+    if not model_filename or not stock_ticker:
+        # If either model or stock ticker is not provided, render the landing page
         return render(request, 'landing.html')
     
     try:
-        data = get_news('NVDA', '25', '03', '2024')
+        # Fetch news based on the provided stock ticker symbol
+        data = get_news(stock_ticker, '25', '03', '2024')
         articles = data.get('results', [])
 
         for article in articles:
@@ -210,13 +211,13 @@ def home(request):
 
         return render(request, 'index.html', {
             'articles': articles,
-            'selected_model': model_filename  # Pass the selected model to the template
+            'selected_model': model_filename,  # Pass the selected model to the template
+            'selected_stock_ticker': stock_ticker  # Pass the selected stock ticker to the template
         })
 
     except Exception as e:
         logger.error(f"Error in home view: {e}")
         return render(request, 'error.html', {'error_message': 'An error occurred while fetching the news'})
-
 
 # Testing page view
 def testing(request):

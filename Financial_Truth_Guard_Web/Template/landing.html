@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Model</title>
+    <title>Select Model and Stock Ticker</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
     <header>
-        <h1>Select Model for Financial News Authenticity Checker</h1>
+        <h1>Select Model and Stock Ticker for Financial News Authenticity Checker</h1>
     </header>
     <main>
         <form action="{% url 'home' %}" method="get">
@@ -19,6 +19,8 @@
                 <option value="naive_bayes_model.pkl">Naive Bayes Model</option>
                 <option value="pilot_model.h5">Pilot Model</option>
             </select>
+            <label for="stock_ticker">Enter Stock Ticker Symbol:</label>
+            <input type="text" id="stock_ticker" name="stock_ticker" required>
             <button type="submit">Submit</button>
         </form>
     </main>
