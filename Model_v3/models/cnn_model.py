@@ -1,29 +1,3 @@
-import os
-import pandas as pd
-import warnings
-warnings.filterwarnings('ignore')
-
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.pipeline import make_pipeline
-from tensorflow.keras.models import load_model
-import joblib
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, Conv1D, GlobalMaxPooling1D, Dense, Dropout
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.callbacks import ModelCheckpoint
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
-import matplotlib.pyplot as plt
-import numpy as np
-
 def read_data():
     # Function to read the true and fake datasets
     true_file_path = '../data/archive/DataSet_Misinfo_TRUE.csv'
@@ -56,12 +30,32 @@ def preprocessing_data(df_true, df_fake):
     return df
 
 def preprocess_text(df):
-    # Function to preprocess the text data
-    nltk.download('stopwords')
+    # Download NLTK resources
     nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('wordnet')
 
+    # Initialize WordNetLemmatizer and stopwords
+    lemmatizer = WordNetLemmatizer()
+    stop_words = set(stopwords.words('english'))
+
+    X = []
     Y = df['label'].values
-    X = df['text'].values
+
+    for text in df['text'].values:
+        # Tokenization
+        tokens = word_tokenize(text)
+        
+        # Lowercase conversion and stopword removal
+        filtered_tokens = [word.lower() for word in tokens if word.lower() not in stop_words]
+        
+        # Lemmatization
+        lemmatized_tokens = [lemmatizer.lemmatize(word) for word in filtered_tokens]
+        
+        # Join tokens back into text
+        processed_text = ' '.join(lemmatized_tokens)
+        
+        X.append(processed_text)
 
     return X, Y
 
@@ -106,7 +100,9 @@ def train_model(X_train, y_train, X_test, y_test, vocab_size, max_len):
                         verbose=1)
     return model, history
 
-def evaluate_model(model_file, tokenizer_file, X_test, y_test, save_confusion_matrix_image=True, confusion_matrix_image_file="Confusion_matrix.jpg"):
+def evaluate_model(model_file, tokenizer_file, X_test, y_test,
+save_confusion_matrix_image=True, 
+confusion_matrix_image_file="Confusion_matrix.jpg"):
      # Load the trained model
     model = load_model(model_file)
     
@@ -138,7 +134,8 @@ def evaluate_model(model_file, tokenizer_file, X_test, y_test, save_confusion_ma
     if save_confusion_matrix_image:
         plt.figure(figsize=(8, 6))
         sns.set(font_scale=1.2)
-        sns.heatmap(cm, annot=True, fmt='g', cmap='Blues', cbar=False, xticklabels=class_labels, yticklabels=class_labels)
+        sns.heatmap(cm, annot=True, fmt='g', cmap='Blues', cbar=False, 
+        xticklabels=class_labels, yticklabels=class_labels)
         plt.xlabel('Predicted Labels')
         plt.ylabel('True Labels')
         plt.title('Confusion Matrix')
