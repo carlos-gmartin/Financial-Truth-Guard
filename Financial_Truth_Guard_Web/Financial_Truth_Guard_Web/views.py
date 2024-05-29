@@ -7,7 +7,6 @@ from .api.news import get_news
 from tensorflow.keras.models import load_model
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 import logging
 
 # Configure logging
@@ -17,6 +16,7 @@ logger = logging.getLogger(__name__)
 # Models directory
 MODELS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v2")
 MODELS_DIR_v3 = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/model_v3/models")
+MODELS_PILOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models/pilot/model")
 
 def load_naive_bayes():
     """Load and return the Naive Bayes model."""
@@ -62,6 +62,28 @@ def load_cnn_tokenizer():
         logger.error(f"Error loading CNN tokenizer: {e}")
         raise
 
+def load_pilot_model():
+    """Load and return the Pilot CNN model."""
+    pilot_model_path = os.path.join(MODELS_PILOT, 'cnn_model_pilot.h5')
+    try:
+        pilot_model = load_model(pilot_model_path)
+        logger.info("Pilot CNN model loaded successfully.")
+        return pilot_model
+    except Exception as e:
+        logger.error(f"Error loading Pilot CNN model: {e}")
+        raise
+
+def load_pilot_tokenizer():
+    """Load and return the Pilot tokenizer."""
+    tokenizer_path = os.path.join(MODELS_PILOT, 'tokenizer_pilot.pkl')
+    try:
+        tokenizer = joblib.load(tokenizer_path)
+        logger.info("Pilot tokenizer loaded successfully.")
+        return tokenizer
+    except Exception as e:
+        logger.error(f"Error loading Pilot tokenizer: {e}")
+        raise
+
 def get_predictions(text, model_filename):
     """Get predictions for the given text using the specified model."""
     try:
@@ -81,25 +103,38 @@ def get_predictions(text, model_filename):
             logger.info("Naive Bayes predictions: %s", predictions)
             return predictions
 
-        else:
+        elif 'cnn_model' in model_filename.lower():
             # Load CNN model and tokenizer
             cnn_model = load_cnn_model()
             tokenizer = load_cnn_tokenizer()
 
             # Preprocess text for CNN
-            preprocessed_text = preprocess_text_for_cnn(text, tokenizer)  # Pass tokenizer to preprocess_text_for_cnn
+            max_sequence_length = 24512  # Adjust this value based on your model's input shape
+            preprocessed_text = preprocess_text_for_cnn(text, tokenizer, max_sequence_length)
 
             # Make predictions using CNN
-            predictions = cnn_model.predict(preprocessed_text)  # No need for padding as it's handled in preprocess_text_for_cnn
+            predictions = cnn_model.predict(preprocessed_text)
             logger.info("CNN predictions: %s", predictions)
+            return predictions
+        
+        elif 'pilot_model' in model_filename.lower():
+            # Load Pilot model and tokenizer
+            pilot_model = load_pilot_model()
+            tokenizer = load_pilot_tokenizer()
+
+            max_sequence_length = 3505  # Adjust this value based on your model's input shape
+            preprocessed_text = preprocess_text_for_cnn(text, tokenizer, max_sequence_length)
+
+            # Make predictions using Pilot model
+            predictions = pilot_model.predict(preprocessed_text)
+            logger.info("Pilot CNN predictions: %s", predictions)
             return predictions
 
     except Exception as e:
         logger.error(f"Error during prediction: {e}")
         return f"Error during prediction: {e}"
 
-
-def extract_fake_news_words(text, predictions, threshold=0.1):
+def extract_fake_news_words(text, predictions, threshold=0.3):
     """Extract words from text that are indicative of fake news based on prediction thresholds."""
     try:
         # Tokenize and preprocess text
@@ -145,16 +180,26 @@ def result(request):
         'indicative_words': indicative_words
     })
 
+# Landing page view
+def landing(request):
+    return render(request, 'landing.html')
 
 # Home page
 def home(request):
+
+    model_filename = request.GET.get('model')
+
+    if not model_filename:
+        # If no model is selected, render the landing page, fix for user movement between test and home page.
+        return render(request, 'landing.html')
+    
     try:
         data = get_news('NVDA', '25', '03', '2024')
         articles = data.get('results', [])
 
         for article in articles:
-            # Get predictions for the article
-            predictions = get_predictions(article['description'], 'cnn_model.h5')
+            # Get predictions for the article using the specified model
+            predictions = get_predictions(article['description'], model_filename)
 
             # Calculate traffic light based on the predictions
             article['traffic_light'] = map_to_traffic_light(predictions)
@@ -163,11 +208,15 @@ def home(request):
             indicative_words = extract_fake_news_words(article['description'], predictions)
             article['indicative_words'] = indicative_words
 
-        return render(request, 'index.html', {'articles': articles})
+        return render(request, 'index.html', {
+            'articles': articles,
+            'selected_model': model_filename  # Pass the selected model to the template
+        })
 
     except Exception as e:
         logger.error(f"Error in home view: {e}")
         return render(request, 'error.html', {'error_message': 'An error occurred while fetching the news'})
+
 
 # Testing page view
 def testing(request):

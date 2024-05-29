@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -137,7 +136,6 @@
         }
     </style>
 </head>
-
 <body>
     <header>
         <h1>Financial News Authenticity Checker</h1>
@@ -151,6 +149,16 @@
         </ul>
     </nav>
     <main>
+        <form action="{% url 'home' %}" method="get">
+            <label for="model">Change Model:</label>
+            <select name="model" id="model">
+                <option value="cnn_model.h5" {% if selected_model == "cnn_model.h5" %}selected{% endif %}>CNN Model</option>
+                <option value="naive_bayes_model.pkl" {% if selected_model == "naive_bayes_model.pkl" %}selected{% endif %}>Naive Bayes Model</option>
+                <option value="pilot_model.h5" {% if selected_model == "pilot_model.h5" %}selected{% endif %}>Pilot Model</option>
+            </select>
+            <button type="submit">Change Model</button>
+        </form>
+
         {% for article in articles %}
         <article>
             <div class="title">
@@ -174,5 +182,4 @@
         {% endfor %}
     </main>
 </body>
-
 </html>

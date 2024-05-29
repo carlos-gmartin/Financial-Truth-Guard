@@ -51,10 +51,10 @@ def preprocess_text_for_nb(text):
 
     return preprocessed_text
 
-def preprocess_text_for_cnn(text, tokenizer):
+def preprocess_text_for_cnn(text, tokenizer, max_sequence_length):
     # Tokenize and pad input text using the tokenizer
     sequences = tokenizer.texts_to_sequences([text])
-    X_pad = pad_sequences(sequences, padding='post', maxlen=24512)  # Adjust maxlen as needed
+    X_pad = pad_sequences(sequences, padding='post', maxlen=max_sequence_length)
     return X_pad
 
 

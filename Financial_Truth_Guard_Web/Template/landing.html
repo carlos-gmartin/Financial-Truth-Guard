@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Model</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Select Model for Financial News Authenticity Checker</h1>
+    </header>
+    <main>
+        <form action="{% url 'home' %}" method="get">
+            <label for="model">Choose a model:</label>
+            <select name="model" id="model">
+                <option value="cnn_model.h5">CNN Model</option>
+                <option value="naive_bayes_model.pkl">Naive Bayes Model</option>
+                <option value="pilot_model.h5">Pilot Model</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+    </main>
+</body>
+</html>
