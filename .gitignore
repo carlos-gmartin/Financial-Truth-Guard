@@ -4,6 +4,15 @@ Model_v3/data/
 Model_v3/models/cnn_model.h5
 Model_v3/models/model_checkpoint.h5
 
+Pilot/data/archive/
+Pilot/data/finance_dataset/excel/
+Pilot/model/cnn_model_pilot_10.h5
+Pilot/model/cnn_model_pilot.h5
+Pilot/model/model_checkpoint_pilot_5.h5
+Pilot/model/model_checkpoint_pilot.h5
+Pilot/model/tokenizer_pilot_10.pkl
+Pilot/model/tokenizer_pilot.pkl
+
 prototype_1/
 
 /Financial_Truth_Guard_Web/Financial_Truth_Guard_Web/models/
