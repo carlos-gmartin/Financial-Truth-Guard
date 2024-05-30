@@ -13,7 +13,7 @@ Financial Truth Guard is a web application designed to analyze news articles and
 To install Financial Truth Guard locally, follow these steps:
 
 1. Clone this repository to your local machine.
-2. Install the required Python packages using pip:
+2. Install the required Python packages using pip, possible start a new env for this:
 `pip install -r requirements.txt`
 3. Run the Django development server:
 `python manage.py runserver`
@@ -23,23 +23,9 @@ To install Financial Truth Guard locally, follow these steps:
 
 - Upon visiting the homepage, Financial Truth Guard retrieves recent news articles related to financial markets.
 - Select a news article to view its details.
-- Choose a model (Naive Bayes or CNN) to classify the article.
+- Choose a model (Naive Bayes or CNN or pilot model) to classify the article.
 - The traffic light indicator provides a visual representation of the likelihood of fake news.
 - The extracted fake news words are displayed for further analysis.
-
-## Contributing
-
-Contributions to Financial Truth Guard are welcome! Here's how you can contribute:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix: `git checkout -b feature/my-feature` or `git checkout -b bugfix/my-bug-fix`.
-3. Make your changes and commit them: `git commit -m 'Add some feature'`.
-4. Push to your branch: `git push origin feature/my-feature`.
-5. Submit a pull request with your changes.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
