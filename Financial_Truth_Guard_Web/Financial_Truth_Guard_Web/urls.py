@@ -24,7 +24,6 @@ from Financial_Truth_Guard_Web import views
 urlpatterns = [
     path('', views.landing, name='landing'),  # Landing page
     path('home/', views.home, name='home'),  # Home page
-    path('api/', views.api, name='api'),
     path('testing/', views.testing, name='testing'),
     path('result/', views.result, name='result'),
 ]

@@ -231,7 +231,3 @@ def testing(request):
     except Exception as e:
         logger.error(f"Error in testing view: {e}")
         return render(request, 'error.html', {'error_message': 'An error occurred while loading the testing page'})
-
-# API documentation page view
-def api(request):
-    return render(request, 'api.html')
