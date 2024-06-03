@@ -109,7 +109,7 @@ def get_predictions(text, model_filename):
             tokenizer = load_cnn_tokenizer()
 
             # Preprocess text for CNN
-            max_sequence_length = 24512  # Adjust this value based on your model's input shape
+            max_sequence_length = 24512
             preprocessed_text = preprocess_text_for_cnn(text, tokenizer, max_sequence_length)
 
             # Make predictions using CNN
@@ -122,7 +122,7 @@ def get_predictions(text, model_filename):
             pilot_model = load_pilot_model()
             tokenizer = load_pilot_tokenizer()
 
-            max_sequence_length = 3505  # Adjust this value based on your model's input shape
+            max_sequence_length = 3505 
             preprocessed_text = preprocess_text_for_cnn(text, tokenizer, max_sequence_length)
 
             # Make predictions using Pilot model
