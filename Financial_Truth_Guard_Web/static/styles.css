@@ -1,9 +1,9 @@
+/* Global styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f2f2f2;
-    color: #333;
 }
 
 header {
@@ -12,7 +12,7 @@ header {
     text-align: center;
 }
 
-nav ul  {
+nav ul {
     list-style-type: none;
     margin: 0;
     padding: 10px;
@@ -33,39 +33,130 @@ h1 {
     margin: 0;
 }
 
-form {
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 20px;
+/* Form page specific styles */
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Change from center to flex-start to align items at the start */
+    height: 80vh; /* Adjust the height to move content higher on the page */
+    padding-top: 20px; /* Optional: add some padding if you want to fine-tune the positioning */
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 80%;
+}
+
+.stock-ticker-table {
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-input[type="text"],
-select {
-    width: calc(100% - 22px);
+.stock-ticker-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stock-ticker-table th, .stock-ticker-table td {
     padding: 10px;
-    margin: 5px 0 15px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.stock-ticker-table th {
+    background-color: #f2f2f2;
+}
+
+.form {
+    background-color: #dbebd2;
+    border-radius: 20px;
     box-sizing: border-box;
+    padding: 20px;
+    text-align: center;
 }
 
-input[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
+.title {
+    color: black;
+    font-family: sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    margin-top: 30px;
+}
+
+.subtitle {
+    color: black;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.input-container {
+    height: 50px;
+    position: relative;
+    width: 100%;
+}
+
+.ic1 {
+    margin-top: 40px;
+}
+
+.ic2 {
+    margin-top: 30px;
+}
+
+.input {
+    background-color: #303245;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    font-size: 18px;
+    height: 100%;
+    outline: 0;
+    padding: 4px 20px 0;
+    width: 100%;
+}
+
+.cut {
+    background-color: #15172b;
+    border-radius: 10px;
+    height: 20px;
+    left: 20px;
+    position: absolute;
+    top: -20px;
+    transform: translateY(0);
+    transition: transform 200ms;
+    width: 76px;
+}
+
+.cut-short {
+    width: 50px;
+}
+
+.submit {
+    background-color: #08d;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 18px;
+    height: 50px;
+    margin-top: 38px;
+    text-align: center;
+    width: 300px;
 }
 
-input[type="submit"]:hover {
-    background-color: black;
+.submit:active {
+    background-color: #06b;
 }
 
+/* Additional styles for other pages */
 main {
     margin: 20px;
 }
@@ -92,4 +183,65 @@ article {
     border-radius: 3px;
 }
 
+h2, p, h3, a {
+    font-size: medium;
+    color: black;
+}
 
+/* Input Box Styling */
+.styled-input {
+    width: 300px;
+    padding: 10px 50px;
+    margin: 10px 0;
+    border: 2px solid #ebe2d2;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.styled-input:focus {
+    border-color: #2E7D32;
+    box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+}
+
+/* Select Box Styling */
+.styled-select {
+    width: 320px;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: 2px solid #ebe2d2;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    background: white;
+    appearance: none; /* Removes default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%232196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: all 0.3s ease-in-out;
+}
+
+.styled-select:focus {
+    border-color: #2E7D32;
+    box-shadow: 0 0 10px rgba(25, 118, 210, 0.5);
+}
+
+/* Explanation Section */
+.explanation {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.explanation h2 {
+    margin-top: 0;
+}
+
+.explanation p {
+    margin-bottom: 0;
+}
