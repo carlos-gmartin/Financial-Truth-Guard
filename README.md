@@ -31,5 +31,9 @@ To install Financial Truth Guard locally, follow these steps:
 
 Financial Truth Guard was developed as part of the CMP2024 course project at [University of East Anglia]. Special thanks to [Farhana Liza] for guidance and support.
 
+Project Rights:
+
+Please reference if any of the code from this project is used. Thank you.
+
 
 
